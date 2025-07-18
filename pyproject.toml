@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "hs-api"
+version = "0.1.0"
+description = ""
+authors = ["Gwenevere Frank <jfrank@ucsd.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10,<3.11"
+numpy = "^2.1.2"
+pyyaml = "^6.0.2"
+tqdm = "^4.66.5"
+connectome_utils = {path = "../connectome_utils", develop = true}
+jaal = "^0.1.7"
+bidict = "^0.22.0"
+fxpmath = {path = "../fxpmath", develop = true}
+stable-baselines3 = "^2.6.0"
+
+[tool.poetry.group.apps.dependencies]
+matplotlib = "^3.9.2"
+spikingjelly = "^0.0.0.0.14"
+snntorch = "^0.9.1"
+tensorboard = "^2.18.0"
+
+[tool.poetry.group.fpga.dependencies]
+hs_bridge = {path = "../hs_bridge", develop = true}
+
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.3.4"
+black = "^25.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.format]
+max-line-length = "88"
