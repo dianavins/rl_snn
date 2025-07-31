@@ -1,0 +1,35 @@
+QNetwork(
+  (features_extractor): NatureCNN(
+    (cnn): Sequential(
+      (0): Conv2d(4, 32, kernel_size=(8, 8), stride=(4, 4))
+      (1): Identity()
+      (2): IFNode(
+        v_threshold=8191, v_reset=None, detach_reset=False
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (3): Conv2d(32, 64, kernel_size=(4, 4), stride=(2, 2))
+      (4): Identity()
+      (5): IFNode(
+        v_threshold=8191, v_reset=None, detach_reset=False
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (6): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+      (7): Identity()
+      (8): IFNode(
+        v_threshold=8191, v_reset=None, detach_reset=False
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (9): Flatten(start_dim=1, end_dim=-1)
+    )
+    (linear): Sequential(
+      (0): Linear(in_features=3136, out_features=512, bias=True)
+      (1): IFNode(
+        v_threshold=8191, v_reset=None, detach_reset=False
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+    )
+  )
+  (q_net): Sequential(
+    (0): Linear(in_features=512, out_features=6, bias=True)
+  )
+)

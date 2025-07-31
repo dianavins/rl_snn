@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import copy
 from spikingjelly.clock_driven.neuron import MultiStepLIFNode
-from spikingjelly.activation_based.neuron import IFNode, LIFNode
+from spikingjelly.activation_based.neuron import LIFNode, IFNode #(this is the og IFNode)
 from snntorch import spikegen
 from spikingjelly.activation_based import encoding
 import csv
@@ -828,6 +828,13 @@ class CRI_Converter:
         elif isinstance(layer, nn.MaxPool2d):
             self._maxPool_converter(layer)
             self.snn_layers += 1
+        elif isinstance(layer, nn.Flatten):
+            # Flatten the current_input matrix to N*D (D = self.embed_dim, N = H*W)
+            self.curr_input = np.transpose(
+                self.curr_input.reshape(
+                    self.curr_input.shape[-2] * self.curr_input.shape[-1], -1
+                )
+            )
         else:
             print("Unsupported layer: ", layer)
 
@@ -1084,15 +1091,18 @@ class CRI_Converter:
             (currently only support Conv2d)
 
         """
+        print(f"Converting layer {k}")
         try:
-            nextLayer = model[k + 2]
+            nextLayer = model[k + 2] # + 2
             if isSNNLayer(nextLayer):
+                print("next layer is SNN layer")
+                print("next layer threshold: ", nextLayer.v_threshold)
                 v_thresh = nextLayer.v_threshold
             else:
                 raise Exception("conv layer with no following identity+snn layer")
         except:
-            raise Exception("linear layer with no following snn layer")
-        print(f"Converting layer: {layer}")
+            raise Exception(f"linear layer with no following snn layer: {nextLayer}")
+        
         output = None
 
         if self.layer_index == self.input_layer:
