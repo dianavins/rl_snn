@@ -1,8 +1,23 @@
 import torch
+import torch.nn as nn
 import gymnasium as gym
 from stable_baselines3 import DQN
 from stable_baselines3.common.env_util import make_atari_env
 from stable_baselines3.common.vec_env import VecVideoRecorder, DummyVecEnv, VecFrameStack
+
+# Register ALE environments for ROM support
+try:
+    import ale_py
+    # Try different registration methods for different ale_py versions
+    if hasattr(ale_py, 'register_all'):
+        ale_py.register_all()
+    else:
+        # Fallback for older versions
+        gym.register_envs(ale_py)
+    print("SUCCESS: ALE environments registered")
+except Exception as e:
+    print(f"WARNING: ALE registration issue: {e}")
+    print("Proceeding anyway - environment may still work")
 
 from spikingjelly.clock_driven import ann2snn, functional
 from torch.utils.data import DataLoader, TensorDataset

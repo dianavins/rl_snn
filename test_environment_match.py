@@ -52,7 +52,9 @@ def test_environment_match():
                 while not done and steps < 1000:
                     action = env.action_space.sample()
                     obs, reward, done, info = env.step(action)
-                    episode_reward += reward[0]
+                    # Fix: reward is already a scalar in vectorized env
+                    reward_scalar = reward if isinstance(reward, (int, float)) else reward[0]
+                    episode_reward += reward_scalar
                     steps += 1
                 
                 episode_rewards.append(episode_reward)
