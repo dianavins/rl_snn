@@ -5,7 +5,7 @@ import torch
 import numpy as np
 from stable_baselines3.common.env_util import make_atari_env
 from stable_baselines3.common.vec_env import VecFrameStack
-from sb3_to_sequential_converter import SequentialDQNNetwork
+from conversion.sb3_to_sequential.sb3_to_sequential_converter import SequentialDQNNetwork
 import ale_py
 
 def debug_reward_calculation():

@@ -5,7 +5,7 @@ Since actual Pong environment requires ROM installation, we simulate the gamepla
 
 import torch
 import numpy as np
-from sb3_to_sequential_converter import SequentialDQNNetwork
+from conversion.sb3_to_sequential.sb3_to_sequential_converter import SequentialDQNNetwork
 import time
 
 def simulate_pong_game(model, episode_num=1, verbose=True):

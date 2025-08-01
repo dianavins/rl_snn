@@ -5,7 +5,7 @@ Demonstrates the model is ready for +21 reward Pong performance
 
 import torch
 import numpy as np
-from sb3_to_sequential_converter import SequentialDQNNetwork
+from conversion.sb3_to_sequential.sb3_to_sequential_converter import SequentialDQNNetwork
 
 def final_summary():
     print("="*70)
