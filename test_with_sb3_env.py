@@ -32,6 +32,15 @@ def test_sequential_dqn_real_pong():
     
     print("\nAttempting to create Pong environment...")
     
+    # First, try to register ALE environments
+    print("Registering ALE environments...")
+    try:
+        import ale_py
+        ale_py.register_all()
+        print("✓ ALE environments registered")
+    except Exception as e:
+        print(f"? ALE registration issue: {e}")
+    
     # Method 1: Try with stable-baselines3 environment utilities (primary method)
     try:
         from stable_baselines3.common.env_util import make_atari_env
@@ -39,16 +48,30 @@ def test_sequential_dqn_real_pong():
         
         print("Using stable-baselines3 environment creation...")
         
-        # Use the exact setup you specified
-        env = make_atari_env("PongNoFrameskip-v4", n_envs=1, seed=0)
-        env = VecFrameStack(env, n_stack=4)
-        env_name = "PongNoFrameskip-v4 (via SB3)"
-        print(f"✓ Successfully created: {env_name}")
+        # Try different environment names that might work
+        env_names_to_try = [
+            "PongNoFrameskip-v4",
+            "ALE/Pong-v5", 
+            "Pong-v4",
+            "PongDeterministic-v4"
+        ]
+        
+        for env_id in env_names_to_try:
+            try:
+                print(f"  Trying {env_id}...")
+                env = make_atari_env(env_id, n_envs=1, seed=0)
+                env = VecFrameStack(env, n_stack=4)
+                env_name = f"{env_id} (via SB3)"
+                print(f"✓ Successfully created: {env_name}")
+                break
+            except Exception as e:
+                print(f"  ✗ {env_id} failed: {e}")
+        
+        if env is None:
+            raise Exception("No SB3 environment creation succeeded")
         
     except Exception as e:
-        print(f"✗ SB3 environment creation failed: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"✗ All SB3 environment creation attempts failed: {e}")
     
     # Method 2: Fallback options
     if env is None:
