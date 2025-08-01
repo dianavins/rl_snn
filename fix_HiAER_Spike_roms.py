@@ -29,12 +29,12 @@ def setup_environment():
     except Exception as e:
         print(f"WARNING: ALE registration issue: {e}")
     
-    # Step 2: Try different environment names
+    # Step 2: Try different environment names - prioritize v4 to match SB3 training
     env_names_to_try = [
-        "ALE/Pong-v5",           # Modern ALE format
-        "PongNoFrameskip-v4",    # Original format
-        "Pong-v4",               # Simple format
-        "PongDeterministic-v4"   # Deterministic variant
+        "PongNoFrameskip-v4",    # Primary: matches SB3 training exactly
+        "Pong-v4",               # Backup: standard v4
+        "PongDeterministic-v4",  # Backup: deterministic v4
+        "ALE/Pong-v5",           # Last resort: newer version
     ]
     
     env = None
