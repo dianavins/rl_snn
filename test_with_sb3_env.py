@@ -32,61 +32,30 @@ def test_sequential_dqn_real_pong():
     
     print("\nAttempting to create Pong environment...")
     
-    # Method 1: Try with gymnasium directly
+    # Method 1: Try with stable-baselines3 environment utilities (primary method)
     try:
-        import gymnasium as gym
+        from stable_baselines3.common.env_util import make_atari_env
+        from stable_baselines3.common.vec_env import VecFrameStack
         
-        # Accept ROM license first
-        print("Accepting ROM license...")
-        try:
-            import autorom
-            autorom.main(["--accept-license"])
-            print("✓ ROM license accepted")
-        except:
-            print("? ROM license step skipped")
+        print("Using stable-baselines3 environment creation...")
         
-        # Try different environment names
-        env_names = [
-            "ALE/Pong-v5",
-            "PongNoFrameskip-v4", 
-            "Pong-v4",
-            "PongDeterministic-v4"
-        ]
+        # Use the exact setup you specified
+        env = make_atari_env("PongNoFrameskip-v4", n_envs=1, seed=0)
+        env = VecFrameStack(env, n_stack=4)
+        env_name = "PongNoFrameskip-v4 (via SB3)"
+        print(f"✓ Successfully created: {env_name}")
         
-        for name in env_names:
-            try:
-                env = gym.make(name)
-                env_name = name
-                print(f"✓ Successfully created: {name}")
-                break
-            except Exception as e:
-                print(f"✗ Failed {name}: {e}")
-        
-    except ImportError:
-        print("✗ Gymnasium not available")
+    except Exception as e:
+        print(f"✗ SB3 environment creation failed: {e}")
+        import traceback
+        traceback.print_exc()
     
-    # Method 2: Try with stable-baselines3 environment utilities
+    # Method 2: Fallback options
     if env is None:
-        try:
-            from stable_baselines3.common.env_util import make_atari_env
-            from stable_baselines3.common.vec_env import VecFrameStack
-            
-            print("Trying stable-baselines3 environment creation...")
-            
-            # This is how SB3 typically creates Atari environments
-            env = make_atari_env('PongNoFrameskip-v4', n_envs=1, seed=42)
-            env = VecFrameStack(env, n_stack=4)
-            env_name = "PongNoFrameskip-v4 (via SB3)"
-            print(f"✓ Successfully created: {env_name}")
-            
-        except Exception as e:
-            print(f"✗ SB3 environment creation failed: {e}")
-    
-    # Method 3: Last resort - check what's available
-    if env is None:
+        print(f"\nPrimary SB3 method failed. Trying fallback options...")
         try:
             import gymnasium as gym
-            print("\nAvailable environments:")
+            print("Available environments:")
             all_envs = list(gym.envs.registry.keys())
             pong_like = [e for e in all_envs if 'pong' in e.lower() or 'ale' in e.lower()]
             print(f"Pong-like environments: {pong_like}")
@@ -96,10 +65,10 @@ def test_sequential_dqn_real_pong():
                     env = gym.make(pong_like[0])
                     env_name = pong_like[0]
                     print(f"✓ Using: {env_name}")
-                except:
-                    pass
-        except:
-            pass
+                except Exception as e:
+                    print(f"✗ Failed to create {pong_like[0]}: {e}")
+        except Exception as e:
+            print(f"✗ Fallback failed: {e}")
     
     if env is None:
         print("\n✗ Could not create any Pong environment")
