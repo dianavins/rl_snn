@@ -85,5 +85,8 @@ lpt9
 *.temp
 *.log
 
+# Large JSON files (HiAER conversion outputs)
+pong_dqn_hiaer.json
+
 # Conda environment
 .conda/
