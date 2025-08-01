@@ -33,7 +33,7 @@ class AdvancedDQNTrainer:
         
         # Learning rate scheduling
         self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode='max', factor=0.5, patience=20, verbose=True
+            self.optimizer, mode='max', factor=0.5, patience=20
         )
         
     def preprocess_obs(self, obs):
