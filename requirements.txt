@@ -1,0 +1,19 @@
+# Core dependencies for Sequential DQN Pong evaluation
+torch>=2.0.0
+numpy>=1.21.0
+matplotlib>=3.5.0
+
+# Gymnasium and Atari environment
+gymnasium[atari]>=1.0.0
+ale-py>=0.9.0
+opencv-python>=4.5.0
+
+# ROM handling
+autorom[accept-rom-license]>=0.6.0
+
+# Optional dependencies for enhanced functionality
+pillow>=8.0.0
+tqdm>=4.60.0
+
+# Development and testing (optional)
+pytest>=6.0.0
