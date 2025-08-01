@@ -233,26 +233,36 @@ def advanced_dqn_training():
         
         print("SUCCESS: Found previous model, transferring compatible weights...")
         
-        # Transfer convolutional weights
-        dueling_model.conv_layers[0].weight.data = old_model.network.conv1.weight.data
-        dueling_model.conv_layers[0].bias.data = old_model.network.conv1.bias.data
-        dueling_model.conv_layers[2].weight.data = old_model.network.conv2.weight.data
-        dueling_model.conv_layers[2].bias.data = old_model.network.conv2.bias.data
-        dueling_model.conv_layers[4].weight.data = old_model.network.conv3.weight.data
-        dueling_model.conv_layers[4].bias.data = old_model.network.conv3.bias.data
+        # Transfer convolutional weights (these should match)
+        dueling_model.conv_layers[0].weight.data.copy_(old_model.network.conv1.weight.data)
+        dueling_model.conv_layers[0].bias.data.copy_(old_model.network.conv1.bias.data)
+        dueling_model.conv_layers[2].weight.data.copy_(old_model.network.conv2.weight.data)
+        dueling_model.conv_layers[2].bias.data.copy_(old_model.network.conv2.bias.data)
+        dueling_model.conv_layers[4].weight.data.copy_(old_model.network.conv3.weight.data)
+        dueling_model.conv_layers[4].bias.data.copy_(old_model.network.conv3.bias.data)
         
-        # Initialize value and advantage streams with old linear weights
-        # Value stream gets partial weights
-        dueling_model.value_stream[0].weight.data = old_model.network.fc1.weight.data[:256]  # Half the weights
-        dueling_model.value_stream[0].bias.data = old_model.network.fc1.bias.data[:256]
+        # For linear layers, we need to be more careful with dimensions
+        # Old model: fc1 [512, 3136] -> fc2 [6, 512]
+        # New model: value_stream [512, 3136] -> [1, 512], advantage_stream [512, 3136] -> [6, 512]
         
-        # Advantage stream gets the other half
-        dueling_model.advantage_stream[0].weight.data = old_model.network.fc1.weight.data[256:]
-        dueling_model.advantage_stream[0].bias.data = old_model.network.fc1.bias.data[256:]
+        old_fc1_weight = old_model.network.fc1.weight.data  # [512, 3136]
+        old_fc1_bias = old_model.network.fc1.bias.data      # [512]
+        old_fc2_weight = old_model.network.fc2.weight.data  # [6, 512]
+        old_fc2_bias = old_model.network.fc2.bias.data      # [6]
         
-        # Final layer for advantage stream
-        dueling_model.advantage_stream[2].weight.data = old_model.network.fc2.weight.data
-        dueling_model.advantage_stream[2].bias.data = old_model.network.fc2.bias.data
+        # Split the hidden layer weights between value and advantage streams
+        # Value stream gets full fc1 weights but outputs 1 value
+        dueling_model.value_stream[0].weight.data.copy_(old_fc1_weight)
+        dueling_model.value_stream[0].bias.data.copy_(old_fc1_bias)
+        # Value stream final layer: initialize to output mean of old fc2 bias
+        dueling_model.value_stream[2].weight.data.copy_(old_fc2_weight.mean(dim=0, keepdim=True))
+        dueling_model.value_stream[2].bias.data.copy_(old_fc2_bias.mean().unsqueeze(0))
+        
+        # Advantage stream gets full fc1 weights and original fc2 weights
+        dueling_model.advantage_stream[0].weight.data.copy_(old_fc1_weight)
+        dueling_model.advantage_stream[0].bias.data.copy_(old_fc1_bias)
+        dueling_model.advantage_stream[2].weight.data.copy_(old_fc2_weight)
+        dueling_model.advantage_stream[2].bias.data.copy_(old_fc2_bias)
         
         print("SUCCESS: Weight transfer completed")
         
