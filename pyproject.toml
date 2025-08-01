@@ -15,9 +15,8 @@ jaal = "^0.1.7"
 bidict = "^0.22.0"
 fxpmath = {path = "../fxpmath", develop = true}
 stable-baselines3 = "^2.6.0"
-gymnasium = {extras = ["atari", "accept-rom-license"], version = "^0.29.0"}
+gymnasium = {extras = ["atari"], version = "^0.29.0"}
 ale-py = "^0.8.1"
-autorom = {extras = ["accept-rom-license"], version = "^0.6.1"}
 torch = "^2.0.0"
 opencv-python = "^4.8.0"
 
